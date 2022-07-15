@@ -78,5 +78,24 @@ def search_by_genre_view(genre):
     )
 
 
+def search_double_play(name1, name2):
+    sql_query = f'''select n.cast
+        from netflix n
+        where n.cast like '%{name1}%' and n.cast like '%{name2}%'
+            '''
+    result = []
+    data = get_data_from_db(sql_query)
+    names_d = {}
+    for item in data:
+        names = set(dict(item).get('cast').split(",")) - set([name1, name2])
+        for name in names:
+            names_d[str(name).strip()] = names_d.get(str(name).strip(), 0) + 1
 
-app.run()
+    for k, v in names_d.items():
+        if v >= 2:
+            result.append(k)
+    return result
+
+
+print(search_double_play('Rose McIver', 'Ben Lamb'))
+# app.run()
